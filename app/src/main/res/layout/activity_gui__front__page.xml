@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
+    tools:context="com.example.moosaali.lifeplaner.gui.gui.GUI_Front_Page"
+    android:id="@+id/mainLayout">
+
+    <include layout="@layout/content_gui__front__page" />
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:srcCompat="@android:color/background_dark"
+        android:id="@+id/imageView"
+        android:background="@android:color/background_dark" />
+
+</android.support.design.widget.CoordinatorLayout>

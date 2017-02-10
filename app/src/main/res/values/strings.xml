@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">Life Planer</string>
+    <string name="action_settings">Settings</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="title_activity_timezone_select__page">TImezoneSelect_Page</string>
+    <string name="title_activity_gui__alarm__page">GUI_Alarm_Page</string>
+</resources>
