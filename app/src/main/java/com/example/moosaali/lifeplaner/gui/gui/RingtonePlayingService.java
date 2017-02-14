@@ -4,20 +4,16 @@ import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.Intent;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.os.Parcelable;
+import android.provider.MediaStore;
 import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.widget.RemoteViews;
 
 import com.example.moosaali.lifeplaner.R;
 import com.example.moosaali.lifeplaner.gui.gui.Application.AlarmReceiver;
-import com.example.moosaali.lifeplaner.gui.gui.GUI_Front_Page;
 
 import static android.app.PendingIntent.getBroadcast;
 
@@ -33,9 +29,13 @@ import static android.app.PendingIntent.getBroadcast;
  */
 public class RingtonePlayingService extends Service{
     private static final int OFF = 1;
+    public final static int NOTIFICATION_ID = 1;
     private static final int SNOOZE = 2;
+    public static boolean Playing;
+    private static int startId = 0;
+    public static MediaPlayer mediaPlayer;
 
-    private int startId;
+
 
     @Override
     public IBinder onBind(Intent intent)
@@ -48,6 +48,8 @@ public class RingtonePlayingService extends Service{
     public int onStartCommand(Intent intent, int flags, int startId)
     {
 
+        makeMediaPlayer();
+        startId ++;
         int pressed = intent.getIntExtra("ButtonPressed", 0);
         if(pressed == OFF){
 
@@ -60,20 +62,16 @@ public class RingtonePlayingService extends Service{
         final NotificationManager notificationManager = (NotificationManager)
                 getSystemService(NOTIFICATION_SERVICE);
 
-        int i = 1, j = 2;
+
         Intent intent1 = new Intent(this.getApplicationContext(), AlarmReceiver.class);
         intent1.putExtra("ButtonPressed", OFF);
-
 
 
         Intent intent2 = new Intent(this.getApplicationContext(), AlarmReceiver.class);
         intent2.putExtra("ButtonPressed", SNOOZE);
 
         PendingIntent pIntent = PendingIntent.getActivity(this, 1, intent1, 0);
-
-
         PendingIntent snoozeIntent = getBroadcast(this, 2, intent2,0);
-
         PendingIntent offIntent = getBroadcast(this, 3, intent1,0);
 
         Notification notification  = new Notification.Builder(this)
@@ -89,10 +87,10 @@ public class RingtonePlayingService extends Service{
 
 
 
-        final MediaPlayer mediaPlayer = MediaPlayer.create(this, R.raw.sample_ringtone);
+
 
         mediaPlayer.start();
-        notificationManager.notify(0 ,notification);
+        notificationManager.notify(NOTIFICATION_ID ,notification);
 
 
 
@@ -112,8 +110,16 @@ public class RingtonePlayingService extends Service{
 
 
 
+    private void makeMediaPlayer(){
+        if(startId  == 0){
+            mediaPlayer = MediaPlayer.create(this, R.raw.sample_ringtone);
+        }
 
+    }
 
+    public static MediaPlayer getMediaPlayer(){
+        return mediaPlayer;
+    }
 
 
 
