@@ -1,5 +1,4 @@
 package com.example.moosaali.lifeplaner.gui.gui;
-
 import android.app.AlarmManager;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
@@ -8,10 +7,21 @@ import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
+import android.text.Layout;
+import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.DatePicker;
+import android.widget.LinearLayout;
+import android.widget.ListView;
+import android.widget.Switch;
+import android.widget.TextClock;
+import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 import com.example.moosaali.lifeplaner.R;
@@ -64,6 +74,18 @@ public class GUI_Alarm_Page extends AppCompatActivity {
             }
         });
 
+        displayAlarms();
+
+
+    }
+
+    private void displayAlarms() {
+
+        String[] testArray = {"Hell", "asda"};
+        CustomAdapter listAdapter = new CustomAdapter(this, testArray);
+        ListView listView = (ListView)findViewById(R.id.alarmListView);
+        listView.setAdapter(listAdapter);
+
     }
 
     @Override
@@ -111,4 +133,33 @@ public class GUI_Alarm_Page extends AppCompatActivity {
     }
 
 
+
+
+}
+
+
+class CustomAdapter extends ArrayAdapter<String>{
+
+    public CustomAdapter(Context context, String[] alarms) {
+        super(context, R.layout.alarm_view,alarms);
+    }
+
+    @NonNull
+    @Override
+    public View getView(int position, View convertView, ViewGroup parent) {
+        LayoutInflater layoutInflator = LayoutInflater.from(getContext());
+        View customView = layoutInflator.inflate(R.layout.alarm_view, parent, false);
+        String alarmTime = getItem(position);
+        TextView alarmTimeText = (TextView) customView.findViewById(R.id.alarmTimeTextView);
+        TextView fmOrAmText = (TextView) customView.findViewById(R.id.amOrFmTextView);
+        Switch alarmSwitch = (Switch) customView.findViewById(R.id.alarmSwitch);
+        alarmSwitch.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(getContext(),"Clicked!",Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        return customView;
+    }
 }

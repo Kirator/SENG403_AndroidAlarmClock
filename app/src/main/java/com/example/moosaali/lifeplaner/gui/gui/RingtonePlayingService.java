@@ -85,10 +85,6 @@ public class RingtonePlayingService extends Service{
                 .build();
 
 
-
-
-
-
         mediaPlayer.start();
         notificationManager.notify(NOTIFICATION_ID ,notification);
 
