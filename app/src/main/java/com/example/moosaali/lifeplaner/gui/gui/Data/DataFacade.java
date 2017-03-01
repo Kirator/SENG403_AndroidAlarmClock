@@ -2,33 +2,42 @@ package com.example.moosaali.lifeplaner.gui.gui.Data;
 
 import android.content.Context;
 
-/**
- * Created by Moosa Ali on 2017-02-02.
- */
+import com.example.moosaali.lifeplaner.gui.gui.Application.Alarm;
+
+import java.util.ArrayList;
 
 /**
+ * Created by Moosa Ali on 2017-02-02.
+ *
  * This is the interface for the Data layer.
- * Any FileIO is done through this.
+ * Any FileIO is done through this class
  * Look a Utility Class for IO functions
  *
  */
-public class DataFacade {
+public class DataFacade
+{
     private State state;
+    private AlarmLog log;
 
-    public DataFacade(Context context){
+    public DataFacade(Context context)
+    {
         state = new State(context);
+        log = new AlarmLog(context);
     }
 
-    public void SetTimeZone(String newState){
-        state.setTimeZone(newState);
-    }
+    public int getMaxID()                       {return Alarm.getMaxID();}
 
-    public String getTimeZone(){
-        return state.getTimeZone();
-    }
+    public void SetTimeZone(String newState)    {state.setTimeZone(newState);}
 
-    public String[] getAllAlarms(){return null;}
+    public String getTimeZone()                 {return state.getTimeZone();}
 
+    public ArrayList<Alarm> getAlarms()         {return log.getAllAlarms();}
 
+    public void addAlarm(Alarm toAdd)           {log.addAlarm(toAdd);}
 
+    public Alarm getAlarm(int id)               {return log.getAlarm(id);}
+
+    public void deleteAlarm(int id)             {log.deleteAlarm(id);}
+
+    public void toggle(int id)                  {log.toggle(id);}
 }

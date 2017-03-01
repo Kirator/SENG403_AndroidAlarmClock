@@ -1,30 +1,39 @@
 package com.example.moosaali.lifeplaner.gui.gui.Application;
 
-
-import java.util.Date;
-
-
-
 /**
- * Created by Moosa Ali on 2017-02-02.
+ * Created by Moosa Ali on 2017-02-02
+ * Modified by Sebastian Crites 2107-28-02
+ *
+ * Alarm class has the date/time, type and message
+ * for each created Alarm, and a boolean
+ * to toggle the alarm on and off
  */
 
-public class Alarm {
+public class Alarm
+{
     private int id;
-    private Date date;
+    private boolean on;
+    private int year, month, day, hour, minute;
     private String type;
     private String message;
-    private String day;
-    public static int alarmNum = 0;
 
+    private static int currentID = -1;
 
-    public Alarm (String date, String type, String message){
-
-        this.date = new Date(Long.parseLong(date));
+    public Alarm(int year,int month,int day,int hour,int minute,
+            String type, String message)
+    {
+        this.year = year;
+        this.month = month;
+        this.day = day;
+        this.hour = hour;
+        this.minute = hour;
+        currentID++; id = currentID;
+        on = true;
         this.type = type;
         this.message = message;
-        id = alarmNum++;
     }
 
-
+    public int getID()                      {return id;}
+    public static int getMaxID()            {return currentID;}
+    public void toggle()                    {on = !on;}
 }
