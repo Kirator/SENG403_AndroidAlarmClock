@@ -28,22 +28,12 @@ public class GUI_Front_Page extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         applicationFacade = new ApplicationFacade(getApplicationContext());
         setContentView(R.layout.activity_gui__front__page);
-        timeSetUp();
+        //timeSetUp();
 
 
 
 
-        //Select Location Float button
-        selectLocationButton = (FloatingActionButton) findViewById(R.id.locationSelectButton);
-        selectLocationButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startService(new Intent(getApplicationContext(), RingtonePlayingService.class));
-                Log.d("ActionButton", "Location Selection Button Pressed.");
-                Intent intent = new Intent(getApplicationContext(), TImezoneSelect_Page.class);
-                startActivity(intent);
-            }
-        });
+
 
         selectLocationButton = (FloatingActionButton) findViewById(R.id.alarmFloatingButton);
         selectLocationButton.setOnClickListener(new View.OnClickListener() {
@@ -80,15 +70,7 @@ public class GUI_Front_Page extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    private void timeSetUp(){
-        String timeZone = applicationFacade.getTimeZone();
-        if(timeZone != null){
-            System.out.println("Read Successful: " + timeZone);
-            TextClock textClock = (TextClock) findViewById(R.id.textClock);
-            textClock.setTimeZone(timeZone);
-        }
 
-    }
 
 
 

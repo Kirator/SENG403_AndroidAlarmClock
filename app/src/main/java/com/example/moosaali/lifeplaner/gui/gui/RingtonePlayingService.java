@@ -50,13 +50,7 @@ public class RingtonePlayingService extends Service{
 
         makeMediaPlayer();
         startId ++;
-        int pressed = intent.getIntExtra("ButtonPressed", 0);
-        if(pressed == OFF){
 
-        } else if(pressed == SNOOZE){
-
-            System.out.println("SNOOZE IN RINGTONE");
-        }
 
 
         final NotificationManager notificationManager = (NotificationManager)
@@ -84,7 +78,6 @@ public class RingtonePlayingService extends Service{
                 .addAction(R.drawable.ic_stat_name, "Snooze", snoozeIntent)
                 .build();
 
-
         mediaPlayer.start();
         notificationManager.notify(NOTIFICATION_ID ,notification);
 
@@ -100,8 +93,6 @@ public class RingtonePlayingService extends Service{
     public void onDestroy() {
         Log.e("JSLog", "on destroy called");
         super.onDestroy();
-
-
     }
 
 
@@ -110,16 +101,11 @@ public class RingtonePlayingService extends Service{
         if(startId  == 0){
             mediaPlayer = MediaPlayer.create(this, R.raw.sample_ringtone);
         }
-
     }
 
     public static MediaPlayer getMediaPlayer(){
         return mediaPlayer;
     }
-
-
-
-
 
 
 }

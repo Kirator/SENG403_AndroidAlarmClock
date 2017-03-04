@@ -106,6 +106,21 @@ public class AlarmLog
         return i;
     }
 
+    //Get the maximum id from the database.
+    public int getMaxId(){
+        ArrayList<Alarm> alarms = getAllAlarms();
+        int maxId = -1;
+        if(alarms.size() > 0){
+           maxId = alarms.get(0).getID();
+            for(int i = 0 ; i < alarms.size(); i ++){
+                maxId = (alarms.get(i).getID() > maxId ? alarms.get(i).getID() : maxId);
+            }
+        }
+        return maxId;
+    }
+
+
+
     //Helper method to get the Alarms as an ArrayList<Object>
     private ArrayList<Object> getAlarmObjects()
     {

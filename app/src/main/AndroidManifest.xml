@@ -27,18 +27,13 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".gui.gui.TImezoneSelect_Page"
-            android:label="@string/title_activity_timezone_select__page"
-            android:theme="@style/AppTheme.NoActionBar" />
-        <activity
             android:name=".gui.gui.GUI_Alarm_Page"
             android:label="@string/title_activity_gui__alarm__page"
             android:theme="@style/AppTheme.NoActionBar"></activity>
 
 
             <service android:name=".gui.gui.RingtonePlayingService" android:enabled="true"></service>
-            <service android:name=".gui.gui.TimeService" android:enabled="true"></service>
-            <receiver android:name=".gui.gui.Application.AlarmReceiver" />
+        <receiver android:name=".gui.gui.Application.AlarmReceiver" />
 
 
     </application>

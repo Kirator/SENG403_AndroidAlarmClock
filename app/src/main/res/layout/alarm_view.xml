@@ -49,6 +49,14 @@
             android:layout_alignParentTop="true"
             android:layout_alignParentStart="true" />
 
+        <TextView
+            android:text="TextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/alarmTimeTextView"
+            android:layout_alignStart="@+id/alarmTimeTextView"
+            android:id="@+id/alarmDatetextView" />
+
 
     </RelativeLayout>
 

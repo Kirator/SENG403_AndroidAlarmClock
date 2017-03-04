@@ -4,6 +4,8 @@ import android.content.Context;
 
 import com.example.moosaali.lifeplaner.gui.gui.Data.DataFacade;
 
+import java.util.ArrayList;
+
 /**
  * Created by Moosa Ali on 2017-02-02.
  */
@@ -28,6 +30,18 @@ public class ApplicationFacade {
         return dataFacade.getTimeZone();
     }
 
+    public void addAlarm(int year,int month,int day,int hour,int minute, String type, String message, int id){
+        Alarm alarmToAdd = new Alarm(year, month, day, hour, minute, type, message, id);
+        dataFacade.addAlarm(alarmToAdd);
+    }
 
+    public ArrayList<Alarm> getAllAlarms(){ return dataFacade.getAlarms();}
 
+    public void removeAlarm(Alarm alarmtoRemove){ dataFacade.deleteAlarm(alarmtoRemove.getID());}
+
+    public void toggleAlarm(Alarm alarmToToggle){dataFacade.toggle(alarmToToggle.getID());}
+
+    public int getNextAlarmId() {return dataFacade.getMaxID() + 1;}
+
+    public Alarm getAlarm(int id) {return dataFacade.getAlarm(id);}
 }

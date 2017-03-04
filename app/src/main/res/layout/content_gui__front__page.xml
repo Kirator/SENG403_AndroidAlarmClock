@@ -27,22 +27,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:clickable="true"
-        app:srcCompat="@android:drawable/ic_menu_edit"
-        android:layout_marginBottom="57dp"
-        android:id="@+id/locationSelectButton"
-        app:fabSize="normal"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        app:backgroundTint="@android:color/darker_gray" />
-
-    <android.support.design.widget.FloatingActionButton
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:clickable="true"
         app:fabSize="normal"
         app:srcCompat="@android:drawable/ic_lock_idle_alarm"
-        android:layout_alignBottom="@+id/locationSelectButton"
-        android:layout_alignEnd="@+id/textClock"
-        android:layout_marginEnd="15dp"
-        android:id="@+id/alarmFloatingButton" />
+        android:id="@+id/alarmFloatingButton"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="37dp" />
 </RelativeLayout>

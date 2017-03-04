@@ -25,7 +25,7 @@ public class DataFacade
         log = new AlarmLog(context);
     }
 
-    public int getMaxID()                       {return Alarm.getMaxID();}
+    public int getMaxID()                       {return log.getMaxId();}
 
     public void SetTimeZone(String newState)    {state.setTimeZone(newState);}
 
@@ -40,4 +40,6 @@ public class DataFacade
     public void deleteAlarm(int id)             {log.deleteAlarm(id);}
 
     public void toggle(int id)                  {log.toggle(id);}
+
+
 }

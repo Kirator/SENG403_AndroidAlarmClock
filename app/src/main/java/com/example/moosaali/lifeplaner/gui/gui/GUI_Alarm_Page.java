@@ -1,5 +1,6 @@
 package com.example.moosaali.lifeplaner.gui.gui;
 import android.app.AlarmManager;
+import android.app.Application;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.app.PendingIntent;
@@ -10,22 +11,26 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
-import android.text.Layout;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.DatePicker;
-import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.Switch;
-import android.widget.TextClock;
 import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
+
 import com.example.moosaali.lifeplaner.R;
+import com.example.moosaali.lifeplaner.gui.gui.Application.Alarm;
 import com.example.moosaali.lifeplaner.gui.gui.Application.AlarmReceiver;
+import com.example.moosaali.lifeplaner.gui.gui.Application.ApplicationFacade;
+
+import java.text.DateFormatSymbols;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 
 
@@ -33,11 +38,11 @@ import java.util.Calendar;
  * This is a Activity for the alarm Page.
  */
 public class GUI_Alarm_Page extends AppCompatActivity {
-    private int dateDialogId = 1, timeDialogId = 2;
-    //private PendingIntent pendingIntent;
+    private static int dateDialogId = 1, timeDialogId = 2;
     private Context context;
-    private int year_a, month_a, day_a;
-    private int hour_a, minute_a;
+    private int year_a, month_a, day_a, hour_a, minute_a;
+    private ApplicationFacade appFacade;
+    private ArrayList<Alarm> allAlarms;
 
 
     /**
@@ -50,6 +55,8 @@ public class GUI_Alarm_Page extends AppCompatActivity {
         setContentView(R.layout.activity_gui__alarm__page);
         this.context = this;
         final Calendar calendar = Calendar.getInstance();
+        appFacade = new ApplicationFacade(context);
+
         year_a = calendar.get(Calendar.YEAR);
         month_a = calendar.get(Calendar.MONTH);
         day_a = calendar.get(Calendar.DAY_OF_MONTH);
@@ -80,9 +87,8 @@ public class GUI_Alarm_Page extends AppCompatActivity {
     }
 
     private void displayAlarms() {
-
-        String[] testArray = {"Hell", "asda"};
-        CustomAdapter listAdapter = new CustomAdapter(this, testArray);
+        allAlarms = appFacade.getAllAlarms();
+        CustomAdapter listAdapter = new CustomAdapter(this, allAlarms, appFacade);
         ListView listView = (ListView)findViewById(R.id.alarmListView);
         listView.setAdapter(listAdapter);
 
@@ -106,7 +112,7 @@ public class GUI_Alarm_Page extends AppCompatActivity {
             month_a = month;
             day_a = dayOfMonth;
             showDialog(timeDialogId);
-            Toast.makeText(context,year + "  " + month + " " + dayOfMonth,Toast.LENGTH_SHORT).show();
+
         }
     };
 
@@ -115,13 +121,21 @@ public class GUI_Alarm_Page extends AppCompatActivity {
         public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
             hour_a = hourOfDay;
             minute_a = minute;
-            Toast.makeText(context,hourOfDay + "  " + minute ,Toast.LENGTH_SHORT).show();
-
             Long alertTime = getAlarmTime();
-            Intent alarmIntent = new Intent(context, AlarmReceiver.class);
-            AlarmManager alarmManager = (AlarmManager)getSystemService(Context.ALARM_SERVICE);
-            alarmManager.set(AlarmManager.RTC_WAKEUP, alertTime, PendingIntent.getBroadcast(context, 1, alarmIntent, PendingIntent.FLAG_UPDATE_CURRENT));
-            System.out.println( "Alarm Set");
+            int id = appFacade.getNextAlarmId();
+            if(alertTime >= Calendar.getInstance().getTimeInMillis()){
+                Intent alarmIntent = new Intent(context, AlarmReceiver.class);
+                alarmIntent.putExtra("ID", id);
+                AlarmManager alarmManager = (AlarmManager)getSystemService(Context.ALARM_SERVICE);
+                alertTime = alertTime - (alertTime % 1000);
+                alarmManager.setExact(AlarmManager.RTC_WAKEUP , alertTime , PendingIntent.getBroadcast(context, 1, alarmIntent, PendingIntent.FLAG_UPDATE_CURRENT));
+                Toast.makeText(context,"Alarm Set" ,Toast.LENGTH_SHORT).show();
+            }
+
+            appFacade.addAlarm(year_a, month_a, day_a, hour_a, minute_a,"ALARM", "NONE", id);
+            allAlarms = appFacade.getAllAlarms();
+            displayAlarms();
+
 
         }
     };
@@ -129,37 +143,80 @@ public class GUI_Alarm_Page extends AppCompatActivity {
     private Long getAlarmTime(){
         Calendar alarmCal = Calendar.getInstance();
         alarmCal.set(year_a, month_a, day_a, hour_a, minute_a);
-        return alarmCal.getTimeInMillis() - 1000;
+        return alarmCal.getTimeInMillis();
     }
-
-
-
 
 }
 
 
-class CustomAdapter extends ArrayAdapter<String>{
-
-    public CustomAdapter(Context context, String[] alarms) {
-        super(context, R.layout.alarm_view,alarms);
+class CustomAdapter extends ArrayAdapter<Alarm>{
+    private ArrayList<Alarm> alarms;
+    private ApplicationFacade appFacade;
+    private CustomAdapter adapter;
+    public CustomAdapter(Context context, ArrayList<Alarm> alarms, ApplicationFacade appFacade) {
+        super(context, R.layout.alarm_view, alarms);
+        this.alarms = alarms;
+        this.appFacade = appFacade;
+        adapter = this;
     }
 
     @NonNull
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
+    public View getView(final int position, View convertView, ViewGroup parent) {
         LayoutInflater layoutInflator = LayoutInflater.from(getContext());
         View customView = layoutInflator.inflate(R.layout.alarm_view, parent, false);
-        String alarmTime = getItem(position);
+        final Alarm currentAlarm = getItem(position);
         TextView alarmTimeText = (TextView) customView.findViewById(R.id.alarmTimeTextView);
         TextView fmOrAmText = (TextView) customView.findViewById(R.id.amOrFmTextView);
-        Switch alarmSwitch = (Switch) customView.findViewById(R.id.alarmSwitch);
+        TextView alarmDateText = (TextView)customView.findViewById(R.id.alarmDatetextView);
+        int hour = currentAlarm.getHour();
+        if(hour < 12){
+            hour = (hour == 0 ? 12 : hour);
+            fmOrAmText.setText("AM");
+        }else{
+            hour -= 12;
+            hour = (hour == 0 ? 12 : hour);
+            fmOrAmText.setText("PM");
+        }
+        alarmTimeText.setText(String.format("%02d:%02d",hour, currentAlarm.getMinute()));
+        String month = "";
+        try {
+            SimpleDateFormat monthParse = new SimpleDateFormat("MM");
+            SimpleDateFormat monthDisplay = new SimpleDateFormat("MMMM");
+            month = monthDisplay.format(monthParse.parse(Integer.toString(currentAlarm.getMonth())));
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        alarmDateText.setText(month + " " + currentAlarm.getDay() + ", " + currentAlarm.getYear());
+
+        final Switch alarmSwitch = (Switch) customView.findViewById(R.id.alarmSwitch);
+        if(appFacade.getAlarm(currentAlarm.getID()).isON()) {
+            alarmSwitch.setChecked(true);
+        }else{
+            alarmSwitch.setChecked(false);
+        }
         alarmSwitch.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(getContext(),"Clicked!",Toast.LENGTH_SHORT).show();
+
+                appFacade.toggleAlarm(currentAlarm);
+                adapter.clear();
+                //appFacade.removeAlarm(currentAlarm);
+                alarms = appFacade.getAllAlarms();
+                for(int i = 0; i < alarms.size(); i++){
+                    adapter.insert(alarms.get(i), i);
+                }
+                adapter.notifyDataSetInvalidated();
+
+
+                Toast.makeText(getContext(),"Clicked " + position,Toast.LENGTH_SHORT).show();
             }
         });
 
         return customView;
     }
+
+
+
+
 }
