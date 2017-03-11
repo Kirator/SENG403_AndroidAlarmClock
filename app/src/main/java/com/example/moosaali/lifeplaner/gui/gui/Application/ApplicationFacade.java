@@ -44,4 +44,6 @@ public class ApplicationFacade {
     public int getNextAlarmId() {return dataFacade.getMaxID() + 1;}
 
     public Alarm getAlarm(int id) {return dataFacade.getAlarm(id);}
+
+    public void changeAlarmMessage(Alarm a, String s) {dataFacade.changeMessage(a.getID(), s);}
 }

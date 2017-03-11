@@ -11,6 +11,8 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
+import android.text.Editable;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,8 +21,11 @@ import android.widget.DatePicker;
 import android.widget.ListView;
 import android.widget.Switch;
 import android.widget.TextView;
+import android.widget.EditText;
 import android.widget.TimePicker;
 import android.widget.Toast;
+
+import android.text.TextWatcher;
 
 import com.example.moosaali.lifeplaner.R;
 import com.example.moosaali.lifeplaner.gui.gui.Application.Alarm;
@@ -38,7 +43,7 @@ import java.util.Calendar;
  * This is a Activity for the alarm Page.
  */
 public class GUI_Alarm_Page extends AppCompatActivity {
-    private static int dateDialogId = 1, timeDialogId = 2;
+    private static int dateDialogId = 1, timeDialogId = 2, nameDialogId = 3;
     private Context context;
     private int year_a, month_a, day_a, hour_a, minute_a;
     private ApplicationFacade appFacade;
@@ -83,7 +88,6 @@ public class GUI_Alarm_Page extends AppCompatActivity {
 
         displayAlarms();
 
-
     }
 
     private void displayAlarms() {
@@ -112,7 +116,6 @@ public class GUI_Alarm_Page extends AppCompatActivity {
             month_a = month;
             day_a = dayOfMonth;
             showDialog(timeDialogId);
-
         }
     };
 
@@ -132,13 +135,14 @@ public class GUI_Alarm_Page extends AppCompatActivity {
                 Toast.makeText(context,"Alarm Set" ,Toast.LENGTH_SHORT).show();
             }
 
-            appFacade.addAlarm(year_a, month_a, day_a, hour_a, minute_a,"ALARM", "NONE", id);
+            appFacade.addAlarm(year_a, month_a, day_a, hour_a, minute_a,"ALARM", "Enter Alarm Name Here", id);
             allAlarms = appFacade.getAllAlarms();
             displayAlarms();
 
-
         }
     };
+
+
 
     private Long getAlarmTime(){
         Calendar alarmCal = Calendar.getInstance();
@@ -169,6 +173,7 @@ class CustomAdapter extends ArrayAdapter<Alarm>{
         TextView alarmTimeText = (TextView) customView.findViewById(R.id.alarmTimeTextView);
         TextView fmOrAmText = (TextView) customView.findViewById(R.id.amOrFmTextView);
         TextView alarmDateText = (TextView)customView.findViewById(R.id.alarmDatetextView);
+
         int hour = currentAlarm.getHour();
         if(hour < 12){
             hour = (hour == 0 ? 12 : hour);
@@ -195,10 +200,12 @@ class CustomAdapter extends ArrayAdapter<Alarm>{
         }else{
             alarmSwitch.setChecked(false);
         }
+
+
+
         alarmSwitch.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
                 appFacade.toggleAlarm(currentAlarm);
                 adapter.clear();
                 //appFacade.removeAlarm(currentAlarm);
@@ -212,6 +219,37 @@ class CustomAdapter extends ArrayAdapter<Alarm>{
                 Toast.makeText(getContext(),"Clicked " + position,Toast.LENGTH_SHORT).show();
             }
         });
+
+
+        // ALARM MESSAGE DISPLAY
+        class ListenerOnTextChange implements TextWatcher {
+            private Context mContext;
+            EditText mEditText;
+
+            public ListenerOnTextChange (Context context, EditText editText) {
+                super();
+                this.mContext = context;
+                this.mEditText = editText;
+            }
+
+            @Override
+            public void afterTextChanged(Editable s){
+            }
+
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after){
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count){
+                appFacade.changeAlarmMessage(currentAlarm, s.toString());
+                currentAlarm.setMessage(s.toString());
+            }
+        }
+
+        EditText alarmName = (EditText) customView.findViewById(R.id.editAlarmText);
+        alarmName.setText(currentAlarm.getMessage());
+        alarmName.addTextChangedListener(new ListenerOnTextChange(getContext(), alarmName));
 
         return customView;
     }

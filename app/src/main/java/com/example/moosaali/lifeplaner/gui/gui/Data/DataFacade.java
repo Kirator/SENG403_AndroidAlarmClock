@@ -41,5 +41,6 @@ public class DataFacade
 
     public void toggle(int id)                  {log.toggle(id);}
 
+    public void changeMessage(int id, String m) {log.changeMessage(id, m);}
 
 }

@@ -57,6 +57,17 @@
             android:layout_alignStart="@+id/alarmTimeTextView"
             android:id="@+id/alarmDatetextView" />
 
+        <EditText
+            android:id="@+id/editAlarmText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignEnd="@+id/alarmSwitch"
+            android:layout_alignStart="@+id/alarmDatetextView"
+            android:layout_below="@+id/alarmDatetextView"
+            android:ems="10"
+            android:inputType="textPersonName"
+            android:text="Alarm Name" />
+
 
     </RelativeLayout>
 

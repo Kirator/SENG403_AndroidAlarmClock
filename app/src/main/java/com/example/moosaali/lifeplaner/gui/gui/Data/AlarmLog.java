@@ -107,7 +107,8 @@ public class AlarmLog
     }
 
     //Get the maximum id from the database.
-    public int getMaxId(){
+    public int getMaxId()
+    {
         ArrayList<Alarm> alarms = getAllAlarms();
         int maxId = -1;
         if(alarms.size() > 0){
@@ -119,7 +120,17 @@ public class AlarmLog
         return maxId;
     }
 
+    public void changeMessage(int id, String s)
+    {
+        ArrayList<Object> alarms = getAlarmObjects();
+        Alarm a = getAlarm(id);
+        a.setMessage(s);
 
+        alarms.set(getIndexOfID(id),(Object)a);
+
+        tdb.remove(key);
+        tdb.putListObject(key, alarms);
+    }
 
     //Helper method to get the Alarms as an ArrayList<Object>
     private ArrayList<Object> getAlarmObjects()

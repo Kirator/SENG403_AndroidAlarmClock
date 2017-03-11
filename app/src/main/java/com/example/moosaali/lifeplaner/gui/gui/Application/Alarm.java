@@ -44,4 +44,6 @@ public class Alarm
     public int getMonth()                   {return month;}
     public int getDay()                     {return day;}
     public int getYear()                    {return year;}
+    public String getMessage()              {return message;}
+    public void setMessage(String m)                {message = m;}
 }
