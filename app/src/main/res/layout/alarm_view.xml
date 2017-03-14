@@ -61,12 +61,23 @@
             android:id="@+id/editAlarmText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignEnd="@+id/alarmSwitch"
-            android:layout_alignStart="@+id/alarmDatetextView"
-            android:layout_below="@+id/alarmDatetextView"
             android:ems="10"
             android:inputType="textPersonName"
-            android:text="Alarm Name" />
+            android:text="Alarm Name"
+            android:layout_below="@+id/alarmDatetextView"
+            android:layout_alignStart="@+id/alarmDatetextView" />
+
+        <TextView
+            android:text="D"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/dailyAlarmSwitch"
+            android:layout_alignBaseline="@+id/alarmSwitch"
+            android:layout_alignBottom="@+id/alarmSwitch"
+            android:layout_toStartOf="@+id/alarmSwitch"
+            android:layout_marginEnd="16dp"
+            android:textSize="20sp"
+            android:textColor="@android:color/black" />
 
 
     </RelativeLayout>
