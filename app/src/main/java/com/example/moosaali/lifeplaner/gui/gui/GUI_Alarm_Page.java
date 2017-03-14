@@ -7,6 +7,7 @@ import android.app.PendingIntent;
 import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
@@ -231,6 +232,7 @@ class CustomAdapter extends ArrayAdapter<Alarm>{
             }
         });
 
+
         alarmTimeText.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -259,6 +261,23 @@ class CustomAdapter extends ArrayAdapter<Alarm>{
                 Toast.makeText(getContext(),"Alarm Removed " + position,Toast.LENGTH_SHORT).show();
             }
         });
+
+
+        // DAILY ALARM SWITCH
+        final TextView dailyAlarmSwitch = (TextView) customView.findViewById(R.id.dailyAlarmSwitch);
+
+        dailyAlarmSwitch.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(dailyAlarmSwitch.getTextColors().getDefaultColor() == Color.YELLOW) {
+                    dailyAlarmSwitch.setTextColor(Color.BLACK);
+                } else {
+                    dailyAlarmSwitch.setTextColor(Color.YELLOW);
+                }
+            }
+        });
+
+
 
 
         // ALARM MESSAGE DISPLAY
