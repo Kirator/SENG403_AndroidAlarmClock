@@ -13,7 +13,9 @@ import android.provider.MediaStore;
 import android.util.Log;
 
 import com.example.moosaali.lifeplaner.R;
+import com.example.moosaali.lifeplaner.gui.gui.Application.Alarm;
 import com.example.moosaali.lifeplaner.gui.gui.Application.AlarmReceiver;
+import com.example.moosaali.lifeplaner.gui.gui.Data.DataFacade;
 
 import static android.app.PendingIntent.getBroadcast;
 
@@ -51,8 +53,6 @@ public class RingtonePlayingService extends Service{
         makeMediaPlayer();
         startId ++;
 
-
-
         final NotificationManager notificationManager = (NotificationManager)
                 getSystemService(NOTIFICATION_SERVICE);
 
@@ -68,9 +68,14 @@ public class RingtonePlayingService extends Service{
         PendingIntent snoozeIntent = getBroadcast(this, 2, intent2,0);
         PendingIntent offIntent = getBroadcast(this, 3, intent1,0);
 
+        // Get current alarm intent & object from store
+        int id = intent.getIntExtra("ID", -1);
+        DataFacade dataFacade = new DataFacade(this.getApplicationContext());
+        Alarm alarm = dataFacade.getAlarm(id);
+
         Notification notification  = new Notification.Builder(this)
                 .setContentTitle("Alarm" + "!")
-                .setContentText("Notification Message") // Message
+                .setContentText(alarm.getMessage()) // Message
                 .setSmallIcon(R.drawable.ic_stat_name)
                 .setContentIntent(pIntent)
                 .setAutoCancel(true)

@@ -68,6 +68,7 @@ public class AlarmReceiver extends BroadcastReceiver {
                         && alarm.getHour() == (int)calendar.get(Calendar.HOUR_OF_DAY)
                         && alarm.getMinute() == (int)calendar.get(Calendar.MINUTE)){
                     serviceIntent = new Intent(context, RingtonePlayingService.class);
+                    serviceIntent.putExtra("ID", id);
                     context.startService(serviceIntent);
 
                     if(dataFacade.getAlarm(id).isRepeatable()){
