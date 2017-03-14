@@ -265,6 +265,11 @@ class CustomAdapter extends ArrayAdapter<Alarm>{
 
         // DAILY ALARM SWITCH
         final TextView dailyAlarmSwitch = (TextView) customView.findViewById(R.id.dailyAlarmSwitch);
+        if(appFacade.getAlarm(currentAlarm.getID()).isRepeatable()) {
+            dailyAlarmSwitch.setTextColor(Color.YELLOW);
+        }else{
+            dailyAlarmSwitch.setTextColor(Color.BLACK);
+        }
 
         dailyAlarmSwitch.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -274,6 +279,7 @@ class CustomAdapter extends ArrayAdapter<Alarm>{
                 } else {
                     dailyAlarmSwitch.setTextColor(Color.YELLOW);
                 }
+                appFacade.toggleRepeatable(currentAlarm);
             }
         });
 

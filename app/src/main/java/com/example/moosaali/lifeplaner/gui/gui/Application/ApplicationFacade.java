@@ -50,4 +50,6 @@ public class ApplicationFacade {
     }
 
     public void changeAlarmMessage(Alarm a, String s) {dataFacade.changeMessage(a.getID(), s);}
+
+    public void toggleRepeatable(Alarm alarmToToggle) {dataFacade.toggleRepeatable(alarmToToggle.getID());}
 }
