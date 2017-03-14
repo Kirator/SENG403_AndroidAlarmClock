@@ -17,7 +17,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.DatePicker;
+import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.Switch;
 import android.widget.TextView;
@@ -48,8 +50,9 @@ public class GUI_Alarm_Page extends AppCompatActivity {
     private int year_a, month_a, day_a, hour_a, minute_a;
     private ApplicationFacade appFacade;
     private ArrayList<Alarm> allAlarms;
-
-
+    public int editAlarmId = 0;
+    public boolean alarmEdit = false;
+    private static GUI_Alarm_Page alarmPageInstance;
     /**
      * Set OnClick listiner for Return Button and the addAlarm Button
      * @param savedInstanceState
@@ -59,14 +62,15 @@ public class GUI_Alarm_Page extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_gui__alarm__page);
         this.context = this;
+        alarmPageInstance = this;
         final Calendar calendar = Calendar.getInstance();
         appFacade = new ApplicationFacade(context);
 
         year_a = calendar.get(Calendar.YEAR);
         month_a = calendar.get(Calendar.MONTH);
         day_a = calendar.get(Calendar.DAY_OF_MONTH);
-
-
+        hour_a = calendar.get(Calendar.HOUR_OF_DAY);
+        minute_a = calendar.get(Calendar.MINUTE);
 
         FloatingActionButton revertFab = (FloatingActionButton) findViewById(R.id.alarmRevertButton);
         revertFab.setOnClickListener(new View.OnClickListener() {
@@ -99,7 +103,7 @@ public class GUI_Alarm_Page extends AppCompatActivity {
     }
 
     @Override
-    protected Dialog onCreateDialog(int id){
+    public Dialog onCreateDialog(int id){
         if(id == this.dateDialogId){
             return new DatePickerDialog(this, datePickerListener,year_a, month_a, day_a );
         } else if(id == this.timeDialogId){
@@ -109,7 +113,7 @@ public class GUI_Alarm_Page extends AppCompatActivity {
         }
     }
 
-    private DatePickerDialog.OnDateSetListener datePickerListener = new DatePickerDialog.OnDateSetListener() {
+    public DatePickerDialog.OnDateSetListener datePickerListener = new DatePickerDialog.OnDateSetListener() {
         @Override
         public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
             year_a = year;
@@ -119,26 +123,30 @@ public class GUI_Alarm_Page extends AppCompatActivity {
         }
     };
 
-    private TimePickerDialog.OnTimeSetListener timePickerListener = new TimePickerDialog.OnTimeSetListener() {
+    public TimePickerDialog.OnTimeSetListener timePickerListener = new TimePickerDialog.OnTimeSetListener() {
         @Override
         public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
             hour_a = hourOfDay;
             minute_a = minute;
             Long alertTime = getAlarmTime();
-            int id = appFacade.getNextAlarmId();
+            int id = (alarmEdit == true ? editAlarmId : appFacade.getNextAlarmId());
+            Toast.makeText(context,"ID"  + ": " + id,Toast.LENGTH_SHORT).show();
             if(alertTime >= Calendar.getInstance().getTimeInMillis()){
                 Intent alarmIntent = new Intent(context, AlarmReceiver.class);
                 alarmIntent.putExtra("ID", id);
                 AlarmManager alarmManager = (AlarmManager)getSystemService(Context.ALARM_SERVICE);
                 alertTime = alertTime - (alertTime % 1000);
                 alarmManager.setExact(AlarmManager.RTC_WAKEUP , alertTime , PendingIntent.getBroadcast(context, 1, alarmIntent, PendingIntent.FLAG_UPDATE_CURRENT));
-                Toast.makeText(context,"Alarm Set" ,Toast.LENGTH_SHORT).show();
+                Toast.makeText(context,"Alarm Set"  + ": " + id,Toast.LENGTH_SHORT).show();
             }
-
-            appFacade.addAlarm(year_a, month_a, day_a, hour_a, minute_a,"ALARM", "Enter Alarm Name Here", id);
+            if(alarmEdit == false){
+                appFacade.addAlarm(year_a, month_a, day_a, hour_a, minute_a,"ALARM", "Enter Alarm Name Here", id);
+            } else{
+                appFacade.editAlarm(year_a,month_a, day_a, hour_a, minute_a, id);
+            }
             allAlarms = appFacade.getAllAlarms();
-            displayAlarms();
-
+            getInstance().displayAlarms();
+            alarmEdit = false;
         }
     };
 
@@ -149,6 +157,9 @@ public class GUI_Alarm_Page extends AppCompatActivity {
         alarmCal.set(year_a, month_a, day_a, hour_a, minute_a);
         return alarmCal.getTimeInMillis();
     }
+
+    public static GUI_Alarm_Page getInstance(){return alarmPageInstance;}
+
 
 }
 
@@ -188,7 +199,7 @@ class CustomAdapter extends ArrayAdapter<Alarm>{
         try {
             SimpleDateFormat monthParse = new SimpleDateFormat("MM");
             SimpleDateFormat monthDisplay = new SimpleDateFormat("MMMM");
-            month = monthDisplay.format(monthParse.parse(Integer.toString(currentAlarm.getMonth())));
+            month = monthDisplay.format(monthParse.parse(Integer.toString(currentAlarm.getMonth() + 1)));
         } catch (ParseException e) {
             e.printStackTrace();
         }
@@ -217,6 +228,35 @@ class CustomAdapter extends ArrayAdapter<Alarm>{
 
 
                 Toast.makeText(getContext(),"Clicked " + position,Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        alarmTimeText.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                GUI_Alarm_Page alarmPageInstance = GUI_Alarm_Page.getInstance();
+                alarmPageInstance.alarmEdit = true;
+                alarmPageInstance.editAlarmId = currentAlarm.getID();
+                Toast.makeText(getContext(),"ID " + currentAlarm.getID(),Toast.LENGTH_SHORT).show();
+                alarmPageInstance.showDialog(1);
+
+            }
+        });
+
+        ImageButton cancleButton = (ImageButton) customView.findViewById(R.id.cancleAlarmButton);
+        cancleButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                adapter.clear();
+                appFacade.removeAlarm(currentAlarm);
+                alarms = appFacade.getAllAlarms();
+                for(int i = 0; i < alarms.size(); i++){
+                    adapter.insert(alarms.get(i), i);
+                }
+                adapter.notifyDataSetInvalidated();
+
+
+                Toast.makeText(getContext(),"Alarm Removed " + position,Toast.LENGTH_SHORT).show();
             }
         });
 

@@ -120,6 +120,20 @@ public class AlarmLog
         return maxId;
     }
 
+    public void editAlarm(int id, int year, int month, int day, int hour, int minute){
+        ArrayList<Object> alarms = getAlarmObjects();
+        Alarm alarmToEdit = (Alarm)alarms.get(getIndexOfID(id));
+        alarmToEdit.setYear(year);
+        alarmToEdit.setMonth(month);
+        alarmToEdit.setDay(day);
+        alarmToEdit.setHour(hour);
+        alarmToEdit.setMinute(minute);
+        tdb.remove(key);
+        tdb.putListObject(key, alarms);
+    }
+
+
+
     public void changeMessage(int id, String s)
     {
         ArrayList<Object> alarms = getAlarmObjects();

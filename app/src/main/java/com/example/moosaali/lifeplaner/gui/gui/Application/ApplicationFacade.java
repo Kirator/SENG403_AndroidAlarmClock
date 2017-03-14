@@ -45,5 +45,9 @@ public class ApplicationFacade {
 
     public Alarm getAlarm(int id) {return dataFacade.getAlarm(id);}
 
+    public void editAlarm(int year,int month,int day,int hour,int minute,int id ){
+        dataFacade.editAlarm(id, year, month, day, hour, minute);
+    }
+
     public void changeAlarmMessage(Alarm a, String s) {dataFacade.changeMessage(a.getID(), s);}
 }

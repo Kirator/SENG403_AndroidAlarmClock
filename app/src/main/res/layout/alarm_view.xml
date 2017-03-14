@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
 
     android:orientation="vertical" android:layout_width="match_parent"
@@ -11,10 +12,13 @@
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_weight="0.02"
+        android:layout_height="wrap_content"
 
-        android:focusable="false">
+        android:focusable="false"
+        android:nestedScrollingEnabled="true"
+        android:layout_weight="0.09"
+        tools:background="@android:color/white"
+        android:backgroundTint="@android:color/white">
 
 
         <TextView
@@ -26,17 +30,6 @@
             android:layout_alignEnd="@+id/alarmTimeTextView"
             />
 
-        <Switch
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_above="@+id/amOrFmTextView"
-            android:layout_alignParentEnd="true"
-            android:layout_marginEnd="17dp"
-            android:id="@+id/alarmSwitch"
-            android:checked="false"
-            android:focusable="false"
-            android:focusableInTouchMode="false"/>
-
         <TextView
             android:layout_width="144dp"
             android:layout_height="wrap_content"
@@ -47,7 +40,8 @@
             android:layout_marginStart="21dp"
             android:layout_marginTop="23dp"
             android:layout_alignParentTop="true"
-            android:layout_alignParentStart="true" />
+            android:layout_alignParentStart="true"
+            android:clickable="true" />
 
         <TextView
             android:text="TextView"
@@ -57,16 +51,40 @@
             android:layout_alignStart="@+id/alarmTimeTextView"
             android:id="@+id/alarmDatetextView" />
 
-        <EditText
-            android:id="@+id/editAlarmText"
+        <Switch
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignEnd="@+id/alarmSwitch"
-            android:layout_alignStart="@+id/alarmDatetextView"
-            android:layout_below="@+id/alarmDatetextView"
+            android:layout_marginEnd="16dp"
+            android:id="@+id/alarmSwitch"
+            android:checked="false"
+            android:focusable="false"
+            android:focusableInTouchMode="false"
+            android:layout_alignBottom="@+id/amOrFmTextView"
+            android:layout_alignParentEnd="true" />
+
+        <EditText
+            android:id="@+id/editAlarmText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             android:ems="10"
             android:inputType="textPersonName"
-            android:text="Alarm Name" />
+            android:text="Alarm Name"
+            android:layout_weight="0.23"
+            android:layout_marginTop="27dp"
+            android:singleLine="true"
+            android:layout_below="@+id/alarmDatetextView"
+            android:layout_alignParentStart="true" />
+
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:srcCompat="@android:drawable/ic_menu_close_clear_cancel"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentEnd="true"
+            android:id="@+id/cancleAlarmButton"
+            tools:background="@android:color/transparent"
+            android:backgroundTint="@android:color/transparent"
+            tools:backgroundTint="@android:color/transparent" />
 
 
     </RelativeLayout>
