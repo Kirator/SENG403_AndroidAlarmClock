@@ -12,11 +12,10 @@ package com.example.moosaali.lifeplaner.gui.gui.Application;
 public class Alarm
 {
     private int id;
-    private boolean on;
+    private boolean on, repeatable;
     private int year, month, day, hour, minute;
     //In case we need this later
     private String type;
-    //In case we need this later
     private String message;
 
     private static int currentID = -1;
@@ -24,6 +23,7 @@ public class Alarm
     public Alarm(int year,int month,int day,int hour,int minute,
             String type, String message, int id)
     {
+        this.repeatable = false;
         this.year = year;
         this.month = month;
         this.day = day;
@@ -52,4 +52,12 @@ public class Alarm
     public void setDay(int day)             {this.day = day;}
     public void setHour(int hour)           {this.hour = hour;}
     public void setMinute(int minute) {this.minute = minute;}
+
+    public boolean isRepeatable() {
+        return repeatable;
+    }
+
+    public void toggleRepeatable () {
+        repeatable = !repeatable;
+    }
 }

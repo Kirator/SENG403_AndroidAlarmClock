@@ -69,8 +69,8 @@ public class RingtonePlayingService extends Service{
         PendingIntent offIntent = getBroadcast(this, 3, intent1,0);
 
         Notification notification  = new Notification.Builder(this)
-                .setContentTitle("Notification Title" + "!")
-                .setContentText("Notification Message")
+                .setContentTitle("Alarm" + "!")
+                .setContentText("Notification Message") // Message
                 .setSmallIcon(R.drawable.ic_stat_name)
                 .setContentIntent(pIntent)
                 .setAutoCancel(true)

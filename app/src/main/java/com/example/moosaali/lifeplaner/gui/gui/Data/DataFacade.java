@@ -44,4 +44,12 @@ public class DataFacade
     public void changeMessage(int id, String m) {log.changeMessage(id, m);}
 
     public void editAlarm (int id, int year, int month, int day, int hour, int minute) {log.editAlarm(id, year, month, day, hour, minute);}
+
+
+    public void toggleRepeatable(int id){log.toggleRepeatable(id);}
+
+    public boolean isRepeatable(int id){
+        Alarm alarm = getAlarm(id);
+        return alarm.isRepeatable();
+    }
 }

@@ -61,7 +61,6 @@ public class AlarmReceiver extends BroadcastReceiver {
             //If alarm is on play music
             if(id != -1 && dataFacade.getAlarm(id).isON()){
                 Calendar calendar = Calendar.getInstance();
-                System.out.println(" Alarm Receiver, NONE.");
                 Alarm alarm = dataFacade.getAlarm(id);
                 //Check to see if alarm has not been changed.
                 if(alarm.getYear() == (int)calendar.get(Calendar.YEAR)
@@ -70,6 +69,13 @@ public class AlarmReceiver extends BroadcastReceiver {
                         && alarm.getMinute() == (int)calendar.get(Calendar.MINUTE)){
                     serviceIntent = new Intent(context, RingtonePlayingService.class);
                     context.startService(serviceIntent);
+
+                    if(dataFacade.getAlarm(id).isRepeatable()){
+                        Intent alarmIntent = new Intent(context, AlarmReceiver.class);
+                        alarmIntent.putExtra("ID", id);
+                        AlarmManager alarmManager = (AlarmManager)context.getSystemService(Context.ALARM_SERVICE);
+                        alarmManager.setExact(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + (24 * 3600 * 1000) , PendingIntent.getBroadcast(context, 1, alarmIntent, PendingIntent.FLAG_UPDATE_CURRENT));
+                    }
                 }
 
             }else if(id == -1){

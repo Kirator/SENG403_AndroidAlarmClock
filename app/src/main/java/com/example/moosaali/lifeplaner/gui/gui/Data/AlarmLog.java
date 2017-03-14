@@ -146,6 +146,15 @@ public class AlarmLog
         tdb.putListObject(key, alarms);
     }
 
+    public void toggleRepeatable(int id){
+        ArrayList<Object> alarms = getAlarmObjects();
+        Alarm alarmToEdit = (Alarm)alarms.get(getIndexOfID(id));
+        alarmToEdit.toggleRepeatable();
+        tdb.remove(key);
+        tdb.putListObject(key, alarms);
+    }
+
+
     //Helper method to get the Alarms as an ArrayList<Object>
     private ArrayList<Object> getAlarmObjects()
     {
