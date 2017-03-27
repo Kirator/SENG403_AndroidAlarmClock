@@ -17,6 +17,8 @@ import com.example.moosaali.lifeplaner.gui.gui.Application.Alarm;
 import com.example.moosaali.lifeplaner.gui.gui.Application.AlarmReceiver;
 import com.example.moosaali.lifeplaner.gui.gui.Data.DataFacade;
 
+import java.lang.reflect.Field;
+
 import static android.app.PendingIntent.getBroadcast;
 
 /**
@@ -104,6 +106,11 @@ public class RingtonePlayingService extends Service{
 
     private void makeMediaPlayer(){
         if(startId  == 0){
+            // Get all Ringtones
+            Field[] fields = R.raw.class.getFields();
+            // Get name of ringtone from database
+
+            // Play ringtone found from the database
             mediaPlayer = MediaPlayer.create(this, R.raw.sample_ringtone);
         }
     }

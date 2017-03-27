@@ -1,6 +1,6 @@
 package com.example.moosaali.lifeplaner.gui.gui;
 import android.app.AlarmManager;
-import android.app.Application;
+import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.app.PendingIntent;
@@ -18,6 +18,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.ImageButton;
@@ -34,8 +35,9 @@ import com.example.moosaali.lifeplaner.R;
 import com.example.moosaali.lifeplaner.gui.gui.Application.Alarm;
 import com.example.moosaali.lifeplaner.gui.gui.Application.AlarmReceiver;
 import com.example.moosaali.lifeplaner.gui.gui.Application.ApplicationFacade;
+import com.example.moosaali.lifeplaner.gui.gui.Application.AlarmRingtone;
 
-import java.text.DateFormatSymbols;
+import java.lang.reflect.Field;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -138,6 +140,7 @@ public class GUI_Alarm_Page extends AppCompatActivity {
                 AlarmManager alarmManager = (AlarmManager)getSystemService(Context.ALARM_SERVICE);
                 alertTime = alertTime - (alertTime % 1000);
                 alarmManager.setExact(AlarmManager.RTC_WAKEUP , alertTime , PendingIntent.getBroadcast(context, 1, alarmIntent, PendingIntent.FLAG_UPDATE_CURRENT));
+
                 Toast.makeText(context,"Alarm Set"  + ": " + id,Toast.LENGTH_SHORT).show();
             }
             if(alarmEdit == false){
@@ -179,7 +182,7 @@ class CustomAdapter extends ArrayAdapter<Alarm>{
     @NonNull
     @Override
     public View getView(final int position, View convertView, ViewGroup parent) {
-        LayoutInflater layoutInflator = LayoutInflater.from(getContext());
+        final LayoutInflater layoutInflator = LayoutInflater.from(getContext());
         View customView = layoutInflator.inflate(R.layout.alarm_view, parent, false);
         final Alarm currentAlarm = getItem(position);
         TextView alarmTimeText = (TextView) customView.findViewById(R.id.alarmTimeTextView);
@@ -262,6 +265,47 @@ class CustomAdapter extends ArrayAdapter<Alarm>{
             }
         });
 
+        //Alarmtone Select Dialaogbox
+        FloatingActionButton alarmToneSelectButton = (FloatingActionButton) customView.findViewById(R.id.toneSelectButton);
+        alarmToneSelectButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                final AlertDialog.Builder alertBuilder = new AlertDialog.Builder(getContext());
+
+                final LayoutInflater layoutInflator = LayoutInflater.from(getContext());
+                View alertView = layoutInflator.inflate(R.layout.alarm_tone_select_dialog, null);
+
+                alertBuilder.setView(alertView);
+                final AlertDialog toneSelectDialog = alertBuilder.create();
+
+
+                Field[] fields=R.raw.class.getFields();
+                ArrayList<AlarmRingtone> tones = new ArrayList<AlarmRingtone>();
+                for(int count=1; count < fields.length -1 ; count++){
+                    tones.add(new AlarmRingtone(fields[count].getName()));
+                }
+                System.out.println(tones.size());
+                ListView listView = (ListView) alertView.findViewById(R.id.toneListView);
+
+                ToneListAdapter toneListAdapter = new ToneListAdapter(getContext(),tones, position);
+                listView.setAdapter(toneListAdapter);
+
+
+                Button cancleButton = (Button) alertView.findViewById(R.id.toneAlertCancleButton);
+                cancleButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        toneSelectDialog.hide();
+                    }
+                });
+                toneSelectDialog.show();
+
+            }
+        });
+
+
+
+
 
         // DAILY ALARM SWITCH
         final TextView dailyAlarmSwitch = (TextView) customView.findViewById(R.id.dailyAlarmSwitch);
@@ -322,4 +366,39 @@ class CustomAdapter extends ArrayAdapter<Alarm>{
 
 
 
+}
+
+class ToneListAdapter extends ArrayAdapter<AlarmRingtone>{
+    private  Context context;
+    private ArrayList<AlarmRingtone> ringtones;
+    private int alarmPos;
+
+    public ToneListAdapter(Context context ,ArrayList<AlarmRingtone> alarmRingtones, int alarmPos) {
+        super(context, R.layout.alarm_tone_selectitem   , alarmRingtones);
+        this.context = context;
+        this.ringtones = alarmRingtones;
+        this.alarmPos = alarmPos;
+        System.out.println("Adapter: " + ringtones.size());
+    }
+
+    @NonNull
+    @Override
+    public View getView(int position, View convertView, ViewGroup parent) {
+        final LayoutInflater layoutInflator = LayoutInflater.from(getContext());
+        View rowView = layoutInflator.inflate(R.layout.alarm_tone_selectitem, parent, false);
+        System.out.println("asdasd");
+        TextView textView = (TextView) rowView.findViewById(R.id.ringToneName);
+        textView.setText(ringtones.get(position).getName());
+
+        FloatingActionButton setRingtoneButton = (FloatingActionButton) rowView.findViewById(R.id.setRingtoneButton);
+        setRingtoneButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                System.out.println("Clicked Alarm: " + alarmPos);
+            }
+        });
+
+
+        return rowView;
+    }
 }

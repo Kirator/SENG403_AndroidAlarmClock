@@ -18,6 +18,7 @@
         android:layout_height="match_parent"
         android:id="@+id/alarmListView"
 
-        android:paddingBottom="20dp" />
+        android:paddingBottom="20dp"
+        android:footerDividersEnabled="true" />
 
 </RelativeLayout>

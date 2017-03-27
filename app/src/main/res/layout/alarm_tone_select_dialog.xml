@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:weightSum="1"
+    android:id="@+id/alertBoxLayout"
+    android:focusable="false">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="0.80"
+        android:fillViewport="true">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:id="@+id/toneListview1"
+            android:weightSum="1">
+
+            <ListView
+                android:layout_width="match_parent"
+                android:layout_height="407dp"
+                android:id="@+id/toneListView"
+                android:focusable="false"
+                android:layout_weight="0.88" />
+
+            <Button
+                android:text="Cancle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/toneAlertCancleButton"
+                android:backgroundTint="@color/colorAccent" />
+
+        </LinearLayout>
+    </ScrollView>
+
+</LinearLayout>
