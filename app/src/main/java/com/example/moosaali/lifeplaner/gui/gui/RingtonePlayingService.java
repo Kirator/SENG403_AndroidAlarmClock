@@ -6,10 +6,7 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
 import android.media.MediaPlayer;
-import android.os.Bundle;
 import android.os.IBinder;
-import android.os.Parcelable;
-import android.provider.MediaStore;
 import android.util.Log;
 
 import com.example.moosaali.lifeplaner.R;
@@ -39,15 +36,11 @@ public class RingtonePlayingService extends Service{
     private static int startId = 0;
     public static MediaPlayer mediaPlayer;
 
-
-
     @Override
     public IBinder onBind(Intent intent)
     {
         return null;
     }
-
-
 
     public int onStartCommand(Intent intent, int flags, int startId)
     {
@@ -94,15 +87,11 @@ public class RingtonePlayingService extends Service{
         return START_NOT_STICKY;
     }
 
-
-
     @Override
     public void onDestroy() {
         Log.e("JSLog", "on destroy called");
         super.onDestroy();
     }
-
-
 
     private void makeMediaPlayer(){
         if(startId  == 0){
@@ -118,7 +107,6 @@ public class RingtonePlayingService extends Service{
     public static MediaPlayer getMediaPlayer(){
         return mediaPlayer;
     }
-
 
 }
 
