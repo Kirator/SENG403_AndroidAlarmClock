@@ -45,11 +45,11 @@ public class DataFacade
 
     public void editAlarm (int id, int year, int month, int day, int hour, int minute) {log.editAlarm(id, year, month, day, hour, minute);}
 
+    public void toggleDailyRepeatable(int id)   {log.toggleDailyRepeatable(id);}
 
-    public void toggleRepeatable(int id){log.toggleRepeatable(id);}
+    public boolean isDailyRepeatable(int id)    {return getAlarm(id).isDailyRepeatable();}
 
-    public boolean isRepeatable(int id){
-        Alarm alarm = getAlarm(id);
-        return alarm.isRepeatable();
-    }
+    public void toggleWeeklyRepeatable(int id)   {log.toggleWeeklyRepeatable(id);}
+
+    public boolean isWeeklyRepeatable(int id)    {return getAlarm(id).isWeeklyRepeatable();}
 }

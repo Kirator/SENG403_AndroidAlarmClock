@@ -146,10 +146,18 @@ public class AlarmLog
         tdb.putListObject(key, alarms);
     }
 
-    public void toggleRepeatable(int id){
+    public void toggleDailyRepeatable(int id){
         ArrayList<Object> alarms = getAlarmObjects();
         Alarm alarmToEdit = (Alarm)alarms.get(getIndexOfID(id));
-        alarmToEdit.toggleRepeatable();
+        alarmToEdit.toggleDailyRepeatable();
+        tdb.remove(key);
+        tdb.putListObject(key, alarms);
+    }
+
+    public void toggleWeeklyRepeatable(int id){
+        ArrayList<Object> alarms = getAlarmObjects();
+        Alarm alarmToEdit = (Alarm)alarms.get(getIndexOfID(id));
+        alarmToEdit.toggleWeeklyRepeatable();
         tdb.remove(key);
         tdb.putListObject(key, alarms);
     }

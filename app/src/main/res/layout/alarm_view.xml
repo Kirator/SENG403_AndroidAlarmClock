@@ -52,28 +52,11 @@
             android:layout_below="@+id/alarmDatetextView"
             android:layout_alignStart="@+id/alarmDatetextView" />
 
+
+
+
+
         ]]>
-
-        <EditText
-            android:id="@+id/editAlarmText"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:ems="10"
-            android:inputType="textPersonName"
-            android:text="Alarm Name"
-            android:layout_below="@+id/alarmDatetextView"
-            android:layout_alignParentStart="true"></EditText>
-
-        <TextView
-            android:text="D"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/dailyAlarmSwitch"
-            android:layout_marginEnd="56dp"
-            android:textSize="20sp"
-            android:textColor="@android:color/black"
-            android:layout_alignTop="@+id/alarmSwitch"
-            android:layout_toStartOf="@+id/alarmSwitch" />
 
         <Switch
             android:layout_width="wrap_content"
@@ -108,6 +91,39 @@
             android:layout_alignParentTop="true"
             android:layout_toEndOf="@+id/toneSelectButton"
             android:layout_marginTop="19dp" />
+
+        <EditText
+            android:id="@+id/editAlarmText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:inputType="textPersonName"
+            android:text="Alarm Name"
+            android:layout_below="@+id/alarmDatetextView"
+            android:layout_alignParentStart="true"></EditText>
+
+        <TextView
+            android:text="D"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/dailyAlarmSwitch"
+            android:layout_marginEnd="17dp"
+            android:textSize="20sp"
+            android:textColor="@android:color/black"
+            android:layout_alignBottom="@+id/cancleAlarmButton"
+            android:layout_toStartOf="@+id/weeklyAlarmSwitch" />
+
+        <TextView
+            android:text="W"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/weeklyAlarmSwitch"
+            android:textSize="20sp"
+            android:textColor="@android:color/black"
+            android:layout_marginEnd="16dp"
+            android:layout_alignBaseline="@+id/dailyAlarmSwitch"
+            android:layout_alignBottom="@+id/dailyAlarmSwitch"
+            android:layout_toStartOf="@+id/alarmSwitch" />
 
 
     </RelativeLayout>

@@ -51,5 +51,6 @@ public class ApplicationFacade {
 
     public void changeAlarmMessage(Alarm a, String s) {dataFacade.changeMessage(a.getID(), s);}
 
-    public void toggleRepeatable(Alarm alarmToToggle) {dataFacade.toggleRepeatable(alarmToToggle.getID());}
+    public void toggleDailyRepeatable(Alarm alarmToToggle) {dataFacade.toggleDailyRepeatable(alarmToToggle.getID());}
+    public void toggleWeeklyRepeatable(Alarm alarmToToggle) {dataFacade.toggleWeeklyRepeatable(alarmToToggle.getID());}
 }

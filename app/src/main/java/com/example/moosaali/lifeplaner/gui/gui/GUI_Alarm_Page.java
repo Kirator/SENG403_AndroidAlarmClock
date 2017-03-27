@@ -309,7 +309,7 @@ class CustomAdapter extends ArrayAdapter<Alarm>{
 
         // DAILY ALARM SWITCH
         final TextView dailyAlarmSwitch = (TextView) customView.findViewById(R.id.dailyAlarmSwitch);
-        if(appFacade.getAlarm(currentAlarm.getID()).isRepeatable()) {
+        if(appFacade.getAlarm(currentAlarm.getID()).isDailyRepeatable()) {
             dailyAlarmSwitch.setTextColor(Color.YELLOW);
         }else{
             dailyAlarmSwitch.setTextColor(Color.BLACK);
@@ -323,7 +323,27 @@ class CustomAdapter extends ArrayAdapter<Alarm>{
                 } else {
                     dailyAlarmSwitch.setTextColor(Color.YELLOW);
                 }
-                appFacade.toggleRepeatable(currentAlarm);
+                appFacade.toggleDailyRepeatable(currentAlarm);
+            }
+        });
+
+        // WEEKLY ALARM SWITCH
+        final TextView weeklyAlarmSwitch = (TextView) customView.findViewById(R.id.weeklyAlarmSwitch);
+        if(appFacade.getAlarm(currentAlarm.getID()).isWeeklyRepeatable()) {
+            weeklyAlarmSwitch.setTextColor(Color.YELLOW);
+        }else{
+            weeklyAlarmSwitch.setTextColor(Color.BLACK);
+        }
+
+        weeklyAlarmSwitch.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(weeklyAlarmSwitch.getTextColors().getDefaultColor() == Color.YELLOW) {
+                    weeklyAlarmSwitch.setTextColor(Color.BLACK);
+                } else {
+                    weeklyAlarmSwitch.setTextColor(Color.YELLOW);
+                }
+                appFacade.toggleWeeklyRepeatable(currentAlarm);
             }
         });
 

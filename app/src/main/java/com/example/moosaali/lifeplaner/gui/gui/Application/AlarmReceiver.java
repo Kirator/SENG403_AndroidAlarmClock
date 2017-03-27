@@ -71,7 +71,7 @@ public class AlarmReceiver extends BroadcastReceiver {
                     serviceIntent.putExtra("ID", id);
                     context.startService(serviceIntent);
 
-                    if(dataFacade.getAlarm(id).isRepeatable()){
+                    if(dataFacade.getAlarm(id).isDailyRepeatable()){
                         Intent alarmIntent = new Intent(context, AlarmReceiver.class);
                         alarmIntent.putExtra("ID", id);
                         AlarmManager alarmManager = (AlarmManager)context.getSystemService(Context.ALARM_SERVICE);
