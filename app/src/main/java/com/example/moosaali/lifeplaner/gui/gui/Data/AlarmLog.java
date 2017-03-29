@@ -58,7 +58,10 @@ public class AlarmLog
         while (next.getID() != id)
         {
             i++;
-            next = (Alarm) alarms.get(i);
+            if(i < alarms.size()){
+                next = (Alarm) alarms.get(i);
+            }
+
         }
 
         return next;
@@ -146,14 +149,29 @@ public class AlarmLog
         tdb.putListObject(key, alarms);
     }
 
-    public void toggleRepeatable(int id){
+    public void toggleDailyRepeatable(int id){
         ArrayList<Object> alarms = getAlarmObjects();
         Alarm alarmToEdit = (Alarm)alarms.get(getIndexOfID(id));
-        alarmToEdit.toggleRepeatable();
+        alarmToEdit.toggleDailyRepeatable();
         tdb.remove(key);
         tdb.putListObject(key, alarms);
     }
 
+    public void toggleWeeklyRepeatable(int id){
+        ArrayList<Object> alarms = getAlarmObjects();
+        Alarm alarmToEdit = (Alarm)alarms.get(getIndexOfID(id));
+        alarmToEdit.toggleWeeklyRepeatable();
+        tdb.remove(key);
+        tdb.putListObject(key, alarms);
+    }
+
+    public void setRingtone(int index, String name){
+        ArrayList<Object> alarms = getAlarmObjects();
+        Alarm alarmToEdit = (Alarm)alarms.get(index);
+        alarmToEdit.setRingTone(name);
+        tdb.remove(key);
+        tdb.putListObject(key, alarms);
+    }
 
     //Helper method to get the Alarms as an ArrayList<Object>
     private ArrayList<Object> getAlarmObjects()

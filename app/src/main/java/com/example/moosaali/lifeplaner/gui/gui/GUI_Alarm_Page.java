@@ -36,6 +36,7 @@ import com.example.moosaali.lifeplaner.gui.gui.Application.Alarm;
 import com.example.moosaali.lifeplaner.gui.gui.Application.AlarmReceiver;
 import com.example.moosaali.lifeplaner.gui.gui.Application.ApplicationFacade;
 import com.example.moosaali.lifeplaner.gui.gui.Application.AlarmRingtone;
+import com.example.moosaali.lifeplaner.gui.gui.Data.DataFacade;
 
 import java.lang.reflect.Field;
 import java.text.ParseException;
@@ -134,20 +135,39 @@ public class GUI_Alarm_Page extends AppCompatActivity {
             Long alertTime = getAlarmTime();
             int id = (alarmEdit == true ? editAlarmId : appFacade.getNextAlarmId());
             Toast.makeText(context,"ID"  + ": " + id,Toast.LENGTH_SHORT).show();
-            if(alertTime >= Calendar.getInstance().getTimeInMillis()){
+            if(alertTime >= Calendar.getInstance().getTimeInMillis() && alarmEdit == false){
                 Intent alarmIntent = new Intent(context, AlarmReceiver.class);
                 alarmIntent.putExtra("ID", id);
                 AlarmManager alarmManager = (AlarmManager)getSystemService(Context.ALARM_SERVICE);
                 alertTime = alertTime - (alertTime % 1000);
-                alarmManager.setExact(AlarmManager.RTC_WAKEUP , alertTime , PendingIntent.getBroadcast(context, 1, alarmIntent, PendingIntent.FLAG_UPDATE_CURRENT));
+                alarmManager.setExact(AlarmManager.RTC_WAKEUP , alertTime , PendingIntent.getBroadcast(context, id, alarmIntent, PendingIntent.FLAG_UPDATE_CURRENT));
 
                 Toast.makeText(context,"Alarm Set"  + ": " + id,Toast.LENGTH_SHORT).show();
-            }
-            if(alarmEdit == false){
+
+                // Store alarm
                 appFacade.addAlarm(year_a, month_a, day_a, hour_a, minute_a,"ALARM", "Enter Alarm Name Here", id);
-            } else{
+
+            } else if (alarmEdit == false)
+            {
+                // Store alarm without creating alarm manager
+                appFacade.addAlarm(year_a, month_a, day_a, hour_a, minute_a,"ALARM", "Enter Alarm Name Here", id);
+
+            } else if (alarmEdit == true)
+            {
+                // If not creating new alarm, cancel old alarm manager &
+                // Create new one
                 appFacade.editAlarm(year_a,month_a, day_a, hour_a, minute_a, id);
+                appFacade.toggleAlarmManager(appFacade.getAlarm(id), false, "NULL");
+                Log.d("Log: ", "Alarm (" + id + ") edited");
+                // Set daily repeating if currently repeatable
+                if(appFacade.getAlarm(id).isDailyRepeatable())
+                    appFacade.toggleAlarmManager(appFacade.getAlarm(id), true, "DAILY");
+
+                // Todo: Set weekly repeating if currently repeatable (Refactor: So, both of them work)
+                if(appFacade.getAlarm(id).isWeeklyRepeatable())
+                    appFacade.toggleAlarmManager(appFacade.getAlarm(id), true, "WEEKLY");
             }
+
             allAlarms = appFacade.getAllAlarms();
             getInstance().displayAlarms();
             alarmEdit = false;
@@ -287,7 +307,7 @@ class CustomAdapter extends ArrayAdapter<Alarm>{
                 System.out.println(tones.size());
                 ListView listView = (ListView) alertView.findViewById(R.id.toneListView);
 
-                ToneListAdapter toneListAdapter = new ToneListAdapter(getContext(),tones, position);
+                ToneListAdapter toneListAdapter = new ToneListAdapter(getContext(),tones, position, toneSelectDialog);
                 listView.setAdapter(toneListAdapter);
 
 
@@ -309,7 +329,7 @@ class CustomAdapter extends ArrayAdapter<Alarm>{
 
         // DAILY ALARM SWITCH
         final TextView dailyAlarmSwitch = (TextView) customView.findViewById(R.id.dailyAlarmSwitch);
-        if(appFacade.getAlarm(currentAlarm.getID()).isRepeatable()) {
+        if(appFacade.getAlarm(currentAlarm.getID()).isDailyRepeatable()) {
             dailyAlarmSwitch.setTextColor(Color.YELLOW);
         }else{
             dailyAlarmSwitch.setTextColor(Color.BLACK);
@@ -323,7 +343,27 @@ class CustomAdapter extends ArrayAdapter<Alarm>{
                 } else {
                     dailyAlarmSwitch.setTextColor(Color.YELLOW);
                 }
-                appFacade.toggleRepeatable(currentAlarm);
+                appFacade.toggleDailyRepeatable(currentAlarm);
+            }
+        });
+
+        // WEEKLY ALARM SWITCH
+        final TextView weeklyAlarmSwitch = (TextView) customView.findViewById(R.id.weeklyAlarmSwitch);
+        if(appFacade.getAlarm(currentAlarm.getID()).isWeeklyRepeatable()) {
+            weeklyAlarmSwitch.setTextColor(Color.YELLOW);
+        }else{
+            weeklyAlarmSwitch.setTextColor(Color.BLACK);
+        }
+
+        weeklyAlarmSwitch.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(weeklyAlarmSwitch.getTextColors().getDefaultColor() == Color.YELLOW) {
+                    weeklyAlarmSwitch.setTextColor(Color.BLACK);
+                } else {
+                    weeklyAlarmSwitch.setTextColor(Color.YELLOW);
+                }
+                appFacade.toggleWeeklyRepeatable(currentAlarm);
             }
         });
 
@@ -372,18 +412,20 @@ class ToneListAdapter extends ArrayAdapter<AlarmRingtone>{
     private  Context context;
     private ArrayList<AlarmRingtone> ringtones;
     private int alarmPos;
+    private AlertDialog dialog;
 
-    public ToneListAdapter(Context context ,ArrayList<AlarmRingtone> alarmRingtones, int alarmPos) {
+    public ToneListAdapter(Context context ,ArrayList<AlarmRingtone> alarmRingtones, int alarmPos, AlertDialog toneSelectDialog) {
         super(context, R.layout.alarm_tone_selectitem   , alarmRingtones);
         this.context = context;
         this.ringtones = alarmRingtones;
         this.alarmPos = alarmPos;
+        this.dialog = toneSelectDialog;
         System.out.println("Adapter: " + ringtones.size());
     }
 
     @NonNull
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
+    public View getView(final int position, View convertView, ViewGroup parent) {
         final LayoutInflater layoutInflator = LayoutInflater.from(getContext());
         View rowView = layoutInflator.inflate(R.layout.alarm_tone_selectitem, parent, false);
         System.out.println("asdasd");
@@ -395,6 +437,10 @@ class ToneListAdapter extends ArrayAdapter<AlarmRingtone>{
             @Override
             public void onClick(View v) {
                 System.out.println("Clicked Alarm: " + alarmPos);
+                DataFacade dataFacade = new DataFacade(context);
+                dataFacade.setRingtone(alarmPos , ringtones.get(position).getName());
+                System.out.println(ringtones.get(position).getName());
+                dialog.hide();
             }
         });
 

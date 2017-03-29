@@ -7,6 +7,7 @@ package com.example.moosaali.lifeplaner.gui.gui.Application;
 public class AlarmRingtone {
     private String name;
 
+    private int resourceId;
 
     public AlarmRingtone(String name){
         this.name = name;
@@ -15,7 +16,6 @@ public class AlarmRingtone {
     public void setName(String name) {
         this.name = name;
     }
-
     public String getName() {
         return name;
     }

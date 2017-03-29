@@ -14,8 +14,6 @@ import com.example.moosaali.lifeplaner.gui.gui.Application.Alarm;
 import com.example.moosaali.lifeplaner.gui.gui.Application.AlarmReceiver;
 import com.example.moosaali.lifeplaner.gui.gui.Data.DataFacade;
 
-import java.lang.reflect.Field;
-
 import static android.app.PendingIntent.getBroadcast;
 
 /**
@@ -44,8 +42,9 @@ public class RingtonePlayingService extends Service{
 
     public int onStartCommand(Intent intent, int flags, int startId)
     {
-
-        makeMediaPlayer();
+        int id = intent.getIntExtra("ID", -1);
+        DataFacade dataFacade = new DataFacade(this.getApplicationContext());
+        makeMediaPlayer(dataFacade.getAlarm(id).getRingTone());
         startId ++;
 
         final NotificationManager notificationManager = (NotificationManager)
@@ -64,8 +63,8 @@ public class RingtonePlayingService extends Service{
         PendingIntent offIntent = getBroadcast(this, 3, intent1,0);
 
         // Get current alarm intent & object from store
-        int id = intent.getIntExtra("ID", -1);
-        DataFacade dataFacade = new DataFacade(this.getApplicationContext());
+
+
         Alarm alarm = dataFacade.getAlarm(id);
 
         Notification notification  = new Notification.Builder(this)
@@ -93,14 +92,26 @@ public class RingtonePlayingService extends Service{
         super.onDestroy();
     }
 
-    private void makeMediaPlayer(){
+    private void makeMediaPlayer(String ringtone){
         if(startId  == 0){
-            // Get all Ringtones
-            Field[] fields = R.raw.class.getFields();
-            // Get name of ringtone from database
+            // OK so the proper way of doing this is samewhat complicated and i dont have time right now to di it properly.
+            int id = R.raw.office;
+            if(ringtone.equals("alarm1")){
+                id = R.raw.alarm1;
+            }else if(ringtone.equals("bells")){
+                id = R.raw.bells;
+            }else if(ringtone.equals("good_morning")){
+                id = R.raw.good_morning;
+            }else if(ringtone.equals("office")){
+                id = R.raw.office;
+            }else if(ringtone.equals("sample_ringtone")){
+                id = R.raw.sample_ringtone;
+            }
+
 
             // Play ringtone found from the database
-            mediaPlayer = MediaPlayer.create(this, R.raw.sample_ringtone);
+            mediaPlayer = MediaPlayer.create(this, id);
+
         }
     }
 
