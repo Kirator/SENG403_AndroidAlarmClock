@@ -134,20 +134,39 @@ public class GUI_Alarm_Page extends AppCompatActivity {
             Long alertTime = getAlarmTime();
             int id = (alarmEdit == true ? editAlarmId : appFacade.getNextAlarmId());
             Toast.makeText(context,"ID"  + ": " + id,Toast.LENGTH_SHORT).show();
-            if(alertTime >= Calendar.getInstance().getTimeInMillis()){
+            if(alertTime >= Calendar.getInstance().getTimeInMillis() && alarmEdit == false){
                 Intent alarmIntent = new Intent(context, AlarmReceiver.class);
                 alarmIntent.putExtra("ID", id);
                 AlarmManager alarmManager = (AlarmManager)getSystemService(Context.ALARM_SERVICE);
                 alertTime = alertTime - (alertTime % 1000);
-                alarmManager.setExact(AlarmManager.RTC_WAKEUP , alertTime , PendingIntent.getBroadcast(context, 1, alarmIntent, PendingIntent.FLAG_UPDATE_CURRENT));
+                alarmManager.setExact(AlarmManager.RTC_WAKEUP , alertTime , PendingIntent.getBroadcast(context, id, alarmIntent, PendingIntent.FLAG_UPDATE_CURRENT));
 
                 Toast.makeText(context,"Alarm Set"  + ": " + id,Toast.LENGTH_SHORT).show();
-            }
-            if(alarmEdit == false){
+
+                // Store alarm
                 appFacade.addAlarm(year_a, month_a, day_a, hour_a, minute_a,"ALARM", "Enter Alarm Name Here", id);
-            } else{
+
+            } else if (alarmEdit == false)
+            {
+                // Store alarm without creating alarm manager
+                appFacade.addAlarm(year_a, month_a, day_a, hour_a, minute_a,"ALARM", "Enter Alarm Name Here", id);
+
+            } else if (alarmEdit == true)
+            {
+                // If not creating new alarm, cancel old alarm manager &
+                // Create new one
                 appFacade.editAlarm(year_a,month_a, day_a, hour_a, minute_a, id);
+                appFacade.toggleAlarmManager(appFacade.getAlarm(id), false, "NULL");
+                Log.d("Log: ", "Alarm (" + id + ") edited");
+                // Set daily repeating if currently repeatable
+                if(appFacade.getAlarm(id).isDailyRepeatable())
+                    appFacade.toggleAlarmManager(appFacade.getAlarm(id), true, "DAILY");
+
+                // Todo: Set weekly repeating if currently repeatable (Refactor: So, both of them work)
+                if(appFacade.getAlarm(id).isWeeklyRepeatable())
+                    appFacade.toggleAlarmManager(appFacade.getAlarm(id), true, "WEEKLY");
             }
+
             allAlarms = appFacade.getAllAlarms();
             getInstance().displayAlarms();
             alarmEdit = false;

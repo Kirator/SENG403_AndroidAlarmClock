@@ -48,7 +48,7 @@ public class AlarmReceiver extends BroadcastReceiver {
                 Intent alarmIntent = new Intent(context, AlarmReceiver.class);
                 alarmIntent.putExtra("ID", id);
                 AlarmManager alarmManager = (AlarmManager)context.getSystemService(Context.ALARM_SERVICE);
-                alarmManager.setExact(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + snoozeTime, PendingIntent.getBroadcast(context, 1, alarmIntent, PendingIntent.FLAG_UPDATE_CURRENT));
+                alarmManager.setExact(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + snoozeTime, PendingIntent.getBroadcast(context, id, alarmIntent, PendingIntent.FLAG_UPDATE_CURRENT));
                 mediaPlayer.stop();
 
             }
@@ -63,21 +63,23 @@ public class AlarmReceiver extends BroadcastReceiver {
                 Calendar calendar = Calendar.getInstance();
                 Alarm alarm = dataFacade.getAlarm(id);
                 //Check to see if alarm has not been changed.
-                if(alarm.getYear() == (int)calendar.get(Calendar.YEAR)
+                // ** Interferes with daily repeating since day as changed
+                // ** We'll toggle alarm manager instead when alarm as been edited
+                /*if(alarm.getYear() == (int)calendar.get(Calendar.YEAR)
                         && alarm.getDay() == (int)calendar.get(Calendar.DAY_OF_MONTH)
                         && alarm.getHour() == (int)calendar.get(Calendar.HOUR_OF_DAY)
-                        && alarm.getMinute() == (int)calendar.get(Calendar.MINUTE)){
+                        && alarm.getMinute() == (int)calendar.get(Calendar.MINUTE)){*/
                     serviceIntent = new Intent(context, RingtonePlayingService.class);
                     serviceIntent.putExtra("ID", id);
                     context.startService(serviceIntent);
 
-                    if(dataFacade.getAlarm(id).isDailyRepeatable()){
+                    /*if(dataFacade.getAlarm(id).isDailyRepeatable()){
                         Intent alarmIntent = new Intent(context, AlarmReceiver.class);
                         alarmIntent.putExtra("ID", id);
                         AlarmManager alarmManager = (AlarmManager)context.getSystemService(Context.ALARM_SERVICE);
                         alarmManager.setExact(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + (24 * 3600 * 1000) , PendingIntent.getBroadcast(context, 1, alarmIntent, PendingIntent.FLAG_UPDATE_CURRENT));
-                    }
-                }
+                    }*/
+                //}
 
             }else if(id == -1){
                 System.out.println(" Alarm Receiver, NONE.");

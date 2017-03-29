@@ -1,5 +1,7 @@
 package com.example.moosaali.lifeplaner.gui.gui.Application;
 
+import java.util.Calendar;
+
 /**
  * Created by Moosa Ali on 2017-02-02
  * Modified by Sebastian Crites 2107-28-02
@@ -66,5 +68,19 @@ public class Alarm
     }
     public void toggleWeeklyRepeatable () {
         weeklyRepeatable = !weeklyRepeatable;
+    }
+
+    public Long getAlarmTime(){
+        Calendar alarmCal = Calendar.getInstance();
+        alarmCal.set(this.year, this.month, this.day, this.hour, this.minute);
+        // If time in past, prevent alarm manager from firing prematurely.
+        if(alarmCal.before(Calendar.getInstance())){
+            Calendar today = Calendar.getInstance();
+            long diff = today.getTimeInMillis() - alarmCal.getTimeInMillis();
+            int days = (int)(diff / (24 * 60 * 60 * 1000));
+            System.out.println("Current days difference: " + days);
+            alarmCal.add(Calendar.DATE, (days + 1));
+        }
+        return alarmCal.getTimeInMillis();
     }
 }
