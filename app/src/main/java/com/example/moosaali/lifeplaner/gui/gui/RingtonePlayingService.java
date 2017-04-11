@@ -27,9 +27,8 @@ import static android.app.PendingIntent.getBroadcast;
  * as i expected.
  */
 public class RingtonePlayingService extends Service{
-    private static final int OFF = 1;
-    public final static int NOTIFICATION_ID = 1;
-    private static final int SNOOZE = 2;
+    public static final int OFF = 1;
+    public static final int SNOOZE = 2;
     public static boolean Playing;
     private static int startId = 0;
     public static MediaPlayer mediaPlayer;
@@ -42,7 +41,12 @@ public class RingtonePlayingService extends Service{
 
     public int onStartCommand(Intent intent, int flags, int startId)
     {
+
         int id = intent.getIntExtra("ID", -1);
+
+        System.out.println("Playing music for Alarm: " + id);
+
+
         DataFacade dataFacade = new DataFacade(this.getApplicationContext());
         makeMediaPlayer(dataFacade.getAlarm(id).getRingTone());
         startId ++;
@@ -52,15 +56,21 @@ public class RingtonePlayingService extends Service{
 
 
         Intent intent1 = new Intent(this.getApplicationContext(), AlarmReceiver.class);
+        intent1.putExtra("ID", id);
         intent1.putExtra("ButtonPressed", OFF);
+        intent1.putExtra("NotificationID", id);
 
 
         Intent intent2 = new Intent(this.getApplicationContext(), AlarmReceiver.class);
+        intent2.putExtra("ID", id);
         intent2.putExtra("ButtonPressed", SNOOZE);
+        intent2.putExtra("NotificationID", id);
 
-        PendingIntent pIntent = PendingIntent.getActivity(this, 1, intent1, 0);
-        PendingIntent snoozeIntent = getBroadcast(this, 2, intent2,0);
-        PendingIntent offIntent = getBroadcast(this, 3, intent1,0);
+
+
+        PendingIntent pIntent = PendingIntent.getActivity(this, 100 +id, intent1, PendingIntent.FLAG_UPDATE_CURRENT);
+        PendingIntent snoozeIntent = getBroadcast(this, 200 + id , intent2,PendingIntent.FLAG_UPDATE_CURRENT);
+        PendingIntent offIntent = getBroadcast(this, 300  + id, intent1,PendingIntent.FLAG_UPDATE_CURRENT);
 
         // Get current alarm intent & object from store
 
@@ -68,7 +78,7 @@ public class RingtonePlayingService extends Service{
         Alarm alarm = dataFacade.getAlarm(id);
 
         Notification notification  = new Notification.Builder(this)
-                .setContentTitle("Alarm" + "!")
+                .setContentTitle("Alarm " + id + "!")
                 .setContentText(alarm.getMessage()) // Message
                 .setSmallIcon(R.drawable.ic_stat_name)
                 .setContentIntent(pIntent)
@@ -77,8 +87,12 @@ public class RingtonePlayingService extends Service{
                 .addAction(R.drawable.ic_stat_name, "Snooze", snoozeIntent)
                 .build();
 
+
+        mediaPlayer.setLooping(true);
         mediaPlayer.start();
-        notificationManager.notify(NOTIFICATION_ID ,notification);
+        notificationManager.notify(id ,notification);
+
+
 
 
 
@@ -92,7 +106,13 @@ public class RingtonePlayingService extends Service{
         super.onDestroy();
     }
 
-    private void makeMediaPlayer(String ringtone){
+    private synchronized void makeMediaPlayer(String ringtone){
+        //Stop Music if already playing before playing new music
+        if(mediaPlayer != null && mediaPlayer.isPlaying()){
+            mediaPlayer.stop();
+        }
+
+        //Play correct music
         if(startId  == 0){
             // OK so the proper way of doing this is samewhat complicated and i dont have time right now to di it properly.
             int id = R.raw.office;
@@ -115,7 +135,7 @@ public class RingtonePlayingService extends Service{
         }
     }
 
-    public static MediaPlayer getMediaPlayer(){
+    public synchronized static MediaPlayer getMediaPlayer(){
         return mediaPlayer;
     }
 

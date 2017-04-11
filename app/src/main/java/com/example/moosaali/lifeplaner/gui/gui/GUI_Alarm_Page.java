@@ -133,19 +133,24 @@ public class GUI_Alarm_Page extends AppCompatActivity {
             hour_a = hourOfDay;
             minute_a = minute;
             Long alertTime = getAlarmTime();
+
             int id = (alarmEdit == true ? editAlarmId : appFacade.getNextAlarmId());
             Toast.makeText(context,"ID"  + ": " + id,Toast.LENGTH_SHORT).show();
+
             if(alertTime >= Calendar.getInstance().getTimeInMillis() && alarmEdit == false){
+
+                AlarmManager alarmManager = (AlarmManager)getSystemService(Context.ALARM_SERVICE);
                 Intent alarmIntent = new Intent(context, AlarmReceiver.class);
                 alarmIntent.putExtra("ID", id);
-                AlarmManager alarmManager = (AlarmManager)getSystemService(Context.ALARM_SERVICE);
-                alertTime = alertTime - (alertTime % 1000);
-                alarmManager.setExact(AlarmManager.RTC_WAKEUP , alertTime , PendingIntent.getBroadcast(context, id, alarmIntent, PendingIntent.FLAG_UPDATE_CURRENT));
 
+//                alertTime = alertTime - (alertTime % 1000);
+                alarmManager.setExact(AlarmManager.RTC_WAKEUP , alertTime , PendingIntent.getBroadcast(context, id, alarmIntent, PendingIntent.FLAG_UPDATE_CURRENT));
                 Toast.makeText(context,"Alarm Set"  + ": " + id,Toast.LENGTH_SHORT).show();
 
                 // Store alarm
                 appFacade.addAlarm(year_a, month_a, day_a, hour_a, minute_a,"ALARM", "Enter Alarm Name Here", id);
+
+
 
             } else if (alarmEdit == false)
             {
@@ -179,6 +184,7 @@ public class GUI_Alarm_Page extends AppCompatActivity {
     private Long getAlarmTime(){
         Calendar alarmCal = Calendar.getInstance();
         alarmCal.set(year_a, month_a, day_a, hour_a, minute_a);
+        alarmCal.set(Calendar.SECOND, 0);
         return alarmCal.getTimeInMillis();
     }
 
@@ -301,7 +307,7 @@ class CustomAdapter extends ArrayAdapter<Alarm>{
 
                 Field[] fields=R.raw.class.getFields();
                 ArrayList<AlarmRingtone> tones = new ArrayList<AlarmRingtone>();
-                for(int count=1; count < fields.length -1 ; count++){
+                for(int count=0; count < fields.length  ; count++){
                     tones.add(new AlarmRingtone(fields[count].getName()));
                 }
                 System.out.println(tones.size());
@@ -325,8 +331,6 @@ class CustomAdapter extends ArrayAdapter<Alarm>{
 
 
 
-
-
         // DAILY ALARM SWITCH
         final TextView dailyAlarmSwitch = (TextView) customView.findViewById(R.id.dailyAlarmSwitch);
         if(appFacade.getAlarm(currentAlarm.getID()).isDailyRepeatable()) {
@@ -342,6 +346,7 @@ class CustomAdapter extends ArrayAdapter<Alarm>{
                     dailyAlarmSwitch.setTextColor(Color.BLACK);
                 } else {
                     dailyAlarmSwitch.setTextColor(Color.YELLOW);
+
                 }
                 appFacade.toggleDailyRepeatable(currentAlarm);
             }
@@ -420,7 +425,7 @@ class ToneListAdapter extends ArrayAdapter<AlarmRingtone>{
         this.ringtones = alarmRingtones;
         this.alarmPos = alarmPos;
         this.dialog = toneSelectDialog;
-        System.out.println("Adapter: " + ringtones.size());
+
     }
 
     @NonNull
@@ -428,7 +433,7 @@ class ToneListAdapter extends ArrayAdapter<AlarmRingtone>{
     public View getView(final int position, View convertView, ViewGroup parent) {
         final LayoutInflater layoutInflator = LayoutInflater.from(getContext());
         View rowView = layoutInflator.inflate(R.layout.alarm_tone_selectitem, parent, false);
-        System.out.println("asdasd");
+
         TextView textView = (TextView) rowView.findViewById(R.id.ringToneName);
         textView.setText(ringtones.get(position).getName());
 
@@ -436,7 +441,7 @@ class ToneListAdapter extends ArrayAdapter<AlarmRingtone>{
         setRingtoneButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                System.out.println("Clicked Alarm: " + alarmPos);
+
                 DataFacade dataFacade = new DataFacade(context);
                 dataFacade.setRingtone(alarmPos , ringtones.get(position).getName());
                 System.out.println(ringtones.get(position).getName());

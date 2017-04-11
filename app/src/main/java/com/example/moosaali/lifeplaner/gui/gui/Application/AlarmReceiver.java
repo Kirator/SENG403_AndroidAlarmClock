@@ -14,74 +14,73 @@ import java.util.Calendar;
 import com.example.moosaali.lifeplaner.gui.gui.Data.DataFacade;
 import com.example.moosaali.lifeplaner.gui.gui.RingtonePlayingService;
 
+import static android.app.PendingIntent.getBroadcast;
+
 /**
  * Created by Moosa Ali on 2017-02-03.
  */
 
 public class AlarmReceiver extends BroadcastReceiver {
 
-    private int snoozeTime = 1000 * 2; // Place holder snooze time
+    private int snoozeTime = 1000 * 5; // Place holder snooze time
 
     @Override
     public void onReceive(Context context, Intent intent) {
         DataFacade dataFacade = new DataFacade(context);
-
+        System.out.println("________________________________________________________________");
         Intent serviceIntent;
-        int status = intent.getIntExtra("ButtonPressed", 0);
-        int id = intent.getIntExtra("ID", -1);
+        int notificationButtonPressed = intent.getIntExtra("ButtonPressed", -1);
+        System.out.println("ButtonPressed " + notificationButtonPressed);
+        int alarmId = intent.getIntExtra("ID", -1);
+        System.out.println("AlarmID " + alarmId);
+        int notificationId = intent.getIntExtra("NotificationID", -1);
+        System.out.println("NotificationID " + notificationId);
+        System.out.println("________________________________________________________________");
 
-
-        System.out.println(status);
+        System.out.println(notificationButtonPressed);
         if(intent == null){
             System.out.println("NULL Intent");
 
         }
-        if(status != 0){
+
+        //If button presson on notification
+        if(notificationButtonPressed != -1 & notificationId != -1){
             MediaPlayer mediaPlayer = RingtonePlayingService.getMediaPlayer();
-            if(status == 1){ // Dismiss Notification Button Pressed
+            if(notificationButtonPressed == RingtonePlayingService.OFF){ // Dismiss Notification Button Pressed
                 mediaPlayer.stop(); // stop the music service
 
-            }else{  // Snooze button pressed, stop music service and set a new alarm
+            }else if(notificationButtonPressed == RingtonePlayingService.SNOOZE){  // Snooze button pressed, stop music service and set a new alarm
 
-                //serviceIntent = new Intent(context, RingtonePlayingService.class);
-                //serviceIntent.putExtra("ButtonPressed", 2);
+
                 Intent alarmIntent = new Intent(context, AlarmReceiver.class);
-                alarmIntent.putExtra("ID", id);
+                alarmIntent.putExtra("ID", alarmId);
+                System.out.println("Sent Alarm ID: " + alarmId);
+                alarmIntent.putExtra("NotificationID", notificationId);
+                PendingIntent pIntent = getBroadcast(context, alarmId + 1000, alarmIntent ,PendingIntent.FLAG_ONE_SHOT);
+
+
                 AlarmManager alarmManager = (AlarmManager)context.getSystemService(Context.ALARM_SERVICE);
-                alarmManager.setExact(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + snoozeTime, PendingIntent.getBroadcast(context, id, alarmIntent, PendingIntent.FLAG_UPDATE_CURRENT));
+                alarmManager.setExact(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + snoozeTime, pIntent);
                 mediaPlayer.stop();
 
             }
 
             NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-            notificationManager.cancel(RingtonePlayingService.NOTIFICATION_ID);
+            notificationManager.cancel(notificationId);
 
         }else{
             Log.d("Alarm Receiver", "Play music");
             //If alarm is on play music
-            if(id != -1 && dataFacade.getAlarm(id).isON()){
-                Calendar calendar = Calendar.getInstance();
-                Alarm alarm = dataFacade.getAlarm(id);
-                //Check to see if alarm has not been changed.
-                // ** Interferes with daily repeating since day as changed
-                // ** We'll toggle alarm manager instead when alarm as been edited
-                /*if(alarm.getYear() == (int)calendar.get(Calendar.YEAR)
-                        && alarm.getDay() == (int)calendar.get(Calendar.DAY_OF_MONTH)
-                        && alarm.getHour() == (int)calendar.get(Calendar.HOUR_OF_DAY)
-                        && alarm.getMinute() == (int)calendar.get(Calendar.MINUTE)){*/
-                    serviceIntent = new Intent(context, RingtonePlayingService.class);
-                    serviceIntent.putExtra("ID", id);
-                    context.startService(serviceIntent);
+            if(alarmId != -1 && dataFacade.getAlarm(alarmId).isON()){
+                System.out.println("ID not -1, ID: " + alarmId);
 
-                    /*if(dataFacade.getAlarm(id).isDailyRepeatable()){
-                        Intent alarmIntent = new Intent(context, AlarmReceiver.class);
-                        alarmIntent.putExtra("ID", id);
-                        AlarmManager alarmManager = (AlarmManager)context.getSystemService(Context.ALARM_SERVICE);
-                        alarmManager.setExact(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + (24 * 3600 * 1000) , PendingIntent.getBroadcast(context, 1, alarmIntent, PendingIntent.FLAG_UPDATE_CURRENT));
-                    }*/
-                //}
 
-            }else if(id == -1){
+                serviceIntent = new Intent(context, RingtonePlayingService.class);
+                serviceIntent.putExtra("ID", alarmId);
+                context.startService(serviceIntent);
+
+
+            }else if(alarmId == -1){
                 System.out.println(" Alarm Receiver, NONE.");
                 serviceIntent = new Intent(context, RingtonePlayingService.class);
                 context.startService(serviceIntent);

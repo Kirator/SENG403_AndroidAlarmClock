@@ -102,7 +102,7 @@ public class ApplicationFacade {
         alarmIntent.putExtra("ID", id);
         PendingIntent pendingIntent = PendingIntent.getBroadcast(this.context, id, alarmIntent, PendingIntent.FLAG_UPDATE_CURRENT);
         AlarmManager alarmManager = (AlarmManager)this.context.getSystemService(Context.ALARM_SERVICE);
-        alertTime = alertTime - (alertTime % 1000);
+//        alertTime = alertTime - (alertTime % 1000);
         alarmManager.cancel(pendingIntent);
         // Decide weather to repeat alarm or not
         if (!repeat)

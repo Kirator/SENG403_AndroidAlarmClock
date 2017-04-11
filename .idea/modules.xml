@@ -5,6 +5,7 @@
       <module fileurl="file://$PROJECT_DIR$/AndroidClock.iml" filepath="$PROJECT_DIR$/AndroidClock.iml" />
       <module fileurl="file://$PROJECT_DIR$/LifePlaner.iml" filepath="$PROJECT_DIR$/LifePlaner.iml" />
       <module fileurl="file://$PROJECT_DIR$/SENG403_AndroidAlarmClock.iml" filepath="$PROJECT_DIR$/SENG403_AndroidAlarmClock.iml" />
+      <module fileurl="file://$PROJECT_DIR$/TrelloApplicationTest/TrelloApplicationTest.iml" filepath="$PROJECT_DIR$/TrelloApplicationTest/TrelloApplicationTest.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
     </modules>
   </component>
